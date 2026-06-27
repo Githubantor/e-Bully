@@ -1,0 +1,10 @@
+{
+  "name": "jrs-trade",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd jrs-trade/backend && npm install",
+    "start": "cd jrs-trade/backend && npm start",
+    "dev": "cd jrs-trade/backend && npm run dev",
+    "seed": "cd jrs-trade/backend && npm run seed"
+  }
+}
