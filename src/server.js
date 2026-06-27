@@ -105,5 +105,5 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`E-Bully server running on port ${PORT}`);
+  console.log(`E-Bully server running on port ${PORT} (${process.env.NODE_ENV || 'development'})`);
 });
