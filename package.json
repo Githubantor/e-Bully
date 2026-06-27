@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "postinstall": "cd jrs-trade/backend && npm install",
-    "start": "cd jrs-trade/backend && npm start",
+    "start": "node jrs-trade/backend/src/server.js",
     "dev": "cd jrs-trade/backend && npm run dev",
     "seed": "cd jrs-trade/backend && npm run seed"
   }
