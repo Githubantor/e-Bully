@@ -2,8 +2,9 @@ services:
   - type: web
     name: jrs-trade-api
     runtime: node
+    rootDir: .
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node jrs-trade/backend/src/server.js
     envVars:
       - key: NODE_ENV
         value: production
