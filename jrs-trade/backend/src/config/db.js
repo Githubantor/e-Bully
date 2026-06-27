@@ -15,6 +15,17 @@ let MasterOrder;
 let MasterReview;
 let MasterCart;
 
+function startFallback() {
+  try {
+    const { MongoMemoryServer } = require('mongodb-memory-server');
+    return MongoMemoryServer;
+  } catch {
+    console.error('FATAL: MongoDB connection failed and mongodb-memory-server is not available for fallback.');
+    console.error('Set a valid MONGODB_URI environment variable or install mongodb-memory-server.');
+    process.exit(1);
+  }
+}
+
 const connectDB = async () => {
   const atlasUri = process.env.MONGODB_URI;
   if (atlasUri && atlasUri !== 'your_mongodb_atlas_uri') {
@@ -22,8 +33,15 @@ const connectDB = async () => {
       await mongoose.connect(atlasUri, { serverSelectionTimeoutMS: 8000 });
       console.log(`MongoDB Connected: ${mongoose.connection.host}`);
     } catch (error) {
-      console.warn(`Atlas connection failed: ${error.message}. Falling back to MongoDB Memory Server...`);
-      const { MongoMemoryServer } = require('mongodb-memory-server');
+      console.warn(`Atlas connection failed: ${error.message}.`);
+
+      if (process.env.NODE_ENV === 'production') {
+        console.error('FATAL: Cannot connect to MongoDB in production. Check MONGODB_URI.');
+        process.exit(1);
+      }
+
+      console.log('Falling back to MongoDB Memory Server...');
+      const MongoMemoryServer = startFallback();
       mongoServer = await MongoMemoryServer.create();
       const uri = mongoServer.getUri();
       await mongoose.connect(uri);
@@ -31,7 +49,7 @@ const connectDB = async () => {
     }
   } else {
     console.log('Starting local MongoDB Memory Server...');
-    const { MongoMemoryServer } = require('mongodb-memory-server');
+    const MongoMemoryServer = startFallback();
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
