@@ -8,9 +8,10 @@ router.post('/image', authenticate, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded.' });
   }
+  const isCloudinary = !!req.file.path && req.file.path.startsWith('http');
   res.json({
-    url: `/uploads/${req.file.filename}`,
-    filename: req.file.filename,
+    url: isCloudinary ? req.file.path : `/uploads/${req.file.filename}`,
+    filename: isCloudinary ? req.file.filename : req.file.filename,
   });
 });
 
@@ -18,10 +19,13 @@ router.post('/images', authenticate, upload.array('images', 5), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ message: 'No files uploaded.' });
   }
-  const files = req.files.map(f => ({
-    url: `/uploads/${f.filename}`,
-    filename: f.filename,
-  }));
+  const files = req.files.map(f => {
+    const isCloudinary = !!f.path && f.path.startsWith('http');
+    return {
+      url: isCloudinary ? f.path : `/uploads/${f.filename}`,
+      filename: f.filename,
+    };
+  });
   res.json({ files });
 });
 
